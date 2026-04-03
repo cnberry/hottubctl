@@ -105,6 +105,7 @@ Without that, we're still in informed-guess mode.
 - fastest path to useful control
 - already partially researched for `hottubctl`
 - likely sufficient for temperature read/set
+- if the cellular subscription is about **$180 for 5 years**, that is not outrageous and may be a perfectly rational convenience spend
 
 **Cons**
 - cloud dependence
@@ -161,6 +162,7 @@ But only **after** confirming the Sundance controller actually exposes a compati
 ## Recommendation
 ### If you want something working fastest:
 - continue with **SmartTub cloud** for `hottubctl`
+- and consider the cellular subscription a valid option if it is roughly **$180 / 5 years**; that may be the cheapest way to buy immediate convenience while we research better local control
 
 ### If you want the best local-first architecture:
 - investigate the tub's **control board and RS-485/accessory bus**
