@@ -105,6 +105,12 @@ If the tub is offline, the CLI should say so instead of pretending stale numbers
 - `config/hottubctl.example.json` — starter example config
 - `research.md` — API notes and rough edges discovered so far
 
+## Built with
+
+This repo was created with:
+- OpenClaw 2026.3.28 (`f9b1079`)
+- OpenAI GPT 5.4
+
 ## Current shape
 
 This repo is still earlier than `poolctl` and `lightctl`, but it already has proof of life:
@@ -115,3 +121,11 @@ This repo is still earlier than `poolctl` and `lightctl`, but it already has pro
 - offline/stale telemetry is called out explicitly
 
 That makes it a decent foundation for extending the CLI feature-by-feature without lying about what is and is not mature yet.
+
+## Agent-first repo notes
+
+This repo is intended to be agent-friendly as well as human-friendly.
+The standard agent-first files live at the repo root:
+- `README.md` — human-facing overview
+- `AGENTS.md` — project principles and working conventions
+- `SKILL.md` — direct agent usage guidance
