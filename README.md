@@ -65,6 +65,22 @@ Do **not** commit real credentials.
 - water reading age
 - a freshness note when the spa appears offline and the data may be stale
 
+Example status output:
+
+```text
+Hot tub status
+--------------
+- Spa: Example Spa (100000000)
+- Connectivity: OFFLINE
+- Connectivity checked: 2026-04-05 10:05:03 PDT (1s ago)
+- Water: 102.9°F
+- Set: 104.0°F
+- Heat mode: AUTO
+- Telemetry updated: 2025-02-25 10:56:39 PST (stale)
+- Water reading updated: 2025-02-25 06:56:38 PST (stale)
+- Note: spa is offline; temperatures may be stale last-known values
+```
+
 ## Development
 
 For early API exploration or proof-of-life work:
@@ -88,3 +104,14 @@ If the tub is offline, the CLI should say so instead of pretending stale numbers
 
 - `config/hottubctl.example.json` — starter example config
 - `research.md` — API notes and rough edges discovered so far
+
+## Current shape
+
+This repo is still earlier than `poolctl` and `lightctl`, but it already has proof of life:
+- login works
+- spa listing works
+- temperature reads work
+- temperature set works
+- offline/stale telemetry is called out explicitly
+
+That makes it a decent foundation for extending the CLI feature-by-feature without lying about what is and is not mature yet.
