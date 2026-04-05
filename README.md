@@ -31,13 +31,19 @@ Status objects appear to include:
 - `heatMode`
 
 ## CLI shape
-Planned/initial commands:
+Current commands:
 
 ```bash
 python3 hottubctl.py spas
 python3 hottubctl.py temp get
 python3 hottubctl.py temp set 101
 ```
+
+`temp get` now reports:
+- explicit SmartTub connectivity state (`ONLINE` / `OFFLINE`)
+- when connectivity was last checked
+- when telemetry and water readings were last updated
+- a freshness note warning when the spa is offline and temperatures may be stale
 
 ## Config
 Local config will live in:

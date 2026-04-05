@@ -6,6 +6,7 @@ import json
 import sys
 
 from .config import ConfigError
+from .render import render_temperature_status
 from .smarttub_api import SpaSelectionError
 from .temperature import get_temperature_status, list_spas, set_temperature
 
@@ -58,14 +59,10 @@ def cmd_temp_get(as_json: bool) -> int:
         return _handle_error(exc)
 
     if as_json:
-        print(json.dumps(status, indent=2, sort_keys=True))
+        print(json.dumps(status, indent=2, sort_keys=True, default=str))
         return 0
 
-    print(f"Spa: {status['spa_name']} ({status['spa_id']})")
-    print(f"Water: {status['water_temp_display']}")
-    print(f"Set:   {status['set_temp_display']}")
-    if status.get('heat_mode'):
-        print(f"Heat mode: {status['heat_mode']}")
+    print(render_temperature_status(status))
     return 0
 
 
