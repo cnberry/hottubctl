@@ -5,10 +5,14 @@ import os
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parent.parent
-CONFIG_DIR = ROOT / "config"
-DEFAULT_CONFIG_PATH = CONFIG_DIR / "hottubctl.json"
 ENV_CONFIG_PATH = "HOTTUBCTL_CONFIG"
+DEFAULT_CONFIG_BASENAME = "hottubctl.json"
+SEARCH_DIRS = [
+    Path.home() / ".config" / "hottubctl",
+    Path.home() / ".hottubctl",
+    Path(__file__).resolve().parent.parent / "config",
+]
+EXAMPLE_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "hottubctl.example.json"
 
 
 class ConfigError(RuntimeError):
@@ -19,14 +23,18 @@ def config_path() -> Path:
     override = os.environ.get(ENV_CONFIG_PATH)
     if override:
         return Path(override).expanduser()
-    return DEFAULT_CONFIG_PATH
+    for directory in SEARCH_DIRS:
+        candidate = directory / DEFAULT_CONFIG_BASENAME
+        if candidate.exists():
+            return candidate
+    return SEARCH_DIRS[0] / DEFAULT_CONFIG_BASENAME
 
 
 def load_config() -> dict[str, Any]:
     path = config_path()
     if not path.exists():
         raise ConfigError(
-            "config/hottubctl.json not found. create it from config/hottubctl.example.json"
+            f"config not found at {path}. create it from {EXAMPLE_CONFIG_PATH} or set {ENV_CONFIG_PATH}"
         )
     with path.open() as f:
         return json.load(f)

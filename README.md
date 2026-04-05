@@ -45,9 +45,30 @@ python3 hottubctl.py temp set 101
 - when telemetry and water readings were last updated
 - a freshness note warning when the spa is offline and temperatures may be stale
 
+## Install
+
+```bash
+cd REPO_ROOT/hottubctl
+just install
+```
+
+That installs an editable `hottubctl` command with `pipx`, matching the general pattern used by the other `*ctl` tools.
+
+Useful `just` targets:
+
+```bash
+just status
+just spas
+just temp-get
+just temp-set 101
+```
+
 ## Config
-Local config will live in:
-- `config/hottubctl.json`
+`hottubctl` looks for config in this order:
+- `$HOTTUBCTL_CONFIG`
+- `~/.config/hottubctl/hottubctl.json`
+- `~/.hottubctl/hottubctl.json`
+- repo-local `config/hottubctl.json`
 
 Expected fields:
 - SmartTub username/email

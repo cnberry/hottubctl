@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hottubctl"
+version = "0.1.0"
+description = "Terminal-first Sundance SmartTub control"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "aiohttp>=3.9.0",
+  "python-dateutil>=2.9.0",
+  "inflection>=0.5.1",
+  "python-smarttub>=0.0.47",
+]
+
+[project.scripts]
+hottubctl = "hottubctl.cli:main"
+
+[tool.setuptools]
+packages = ["hottubctl"]
