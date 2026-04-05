@@ -48,7 +48,8 @@ python3 hottubctl.py temp set 101
 ## Install
 
 ```bash
-cd REPO_ROOT/hottubctl
+git clone git@github.com:your-user/hottubctl.git
+cd hottubctl
 just install
 ```
 
@@ -68,7 +69,7 @@ just temp-set 101
 - `$HOTTUBCTL_CONFIG`
 - `~/.config/hottubctl/hottubctl.json`
 - `~/.hottubctl/hottubctl.json`
-- repo-local `config/hottubctl.json`
+- repo-local `config/hottubctl.json` (dev-only fallback)
 
 Expected fields:
 - SmartTub username/email
