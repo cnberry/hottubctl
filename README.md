@@ -25,6 +25,10 @@ That installs `hottubctl` with `pipx` so it behaves like a normal command on you
 Useful `just` targets:
 
 ```bash
+just setup
+just test
+just test-integration
+just test-all
 just status
 just spas
 just temp-get
