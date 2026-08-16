@@ -1,6 +1,5 @@
 {
   "username": "your-smarttub-email@example.com",
-  "password": "your-smarttub-password",
   "spa_name": "",
   "spa_id": "",
   "temperature_unit": "F"

@@ -6,11 +6,12 @@ from pathlib import Path
 from typing import Any
 
 ENV_CONFIG_PATH = "HOTTUBCTL_CONFIG"
+ENV_USERNAME = "HOTTUBCTL_USERNAME"
+ENV_PASSWORD = "HOTTUBCTL_PASSWORD"
 DEFAULT_CONFIG_BASENAME = "hottubctl.json"
 SEARCH_DIRS = [
     Path.home() / ".config" / "hottubctl",
     Path.home() / ".hottubctl",
-    Path(__file__).resolve().parent.parent / "config",
 ]
 EXAMPLE_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "hottubctl.example.json"
 
@@ -42,10 +43,12 @@ def load_config() -> dict[str, Any]:
 
 def smarttub_credentials() -> tuple[str, str]:
     config = load_config()
-    username = config.get("username")
-    password = config.get("password")
+    username = os.environ.get(ENV_USERNAME) or config.get("username")
+    password = os.environ.get(ENV_PASSWORD) or config.get("password")
     if not username or not password:
-        raise ConfigError("config requires username and password")
+        raise ConfigError(
+            f"credentials require username and password in config or {ENV_USERNAME}/{ENV_PASSWORD}"
+        )
     return username, password
 
 
@@ -56,4 +59,7 @@ def preferred_spa_selector() -> tuple[str | None, str | None]:
 
 def preferred_unit() -> str:
     config = load_config()
-    return str(config.get("temperature_unit", "F")).upper()
+    unit = str(config.get("temperature_unit", "F")).upper()
+    if unit not in {"F", "C"}:
+        raise ConfigError("temperature_unit must be F or C")
+    return unit

@@ -12,7 +12,9 @@ from .temperature import get_temperature_status, list_spas, set_temperature
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="hottubctl", description="Terminal-first Sundance SmartTub control")
+    parser = argparse.ArgumentParser(
+        prog="hottubctl", description="Terminal-first Sundance SmartTub control"
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
     spas = sub.add_parser("spas", help="list SmartTub spas visible to the account")
@@ -27,6 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     temp_set = temp_sub.add_parser("set", help="set target temperature")
     temp_set.add_argument("value", type=float, help="temperature value")
     temp_set.add_argument("--unit", choices=["F", "C", "f", "c"], help="override configured unit")
+    temp_set.add_argument("--yes", action="store_true", help="actually perform the hardware write")
     temp_set.add_argument("--json", action="store_true", help="emit raw JSON")
 
     return parser
@@ -66,7 +69,13 @@ def cmd_temp_get(as_json: bool) -> int:
     return 0
 
 
-def cmd_temp_set(value: float, unit: str | None, as_json: bool) -> int:
+def cmd_temp_set(value: float, unit: str | None, as_json: bool, confirmed: bool) -> int:
+    if not confirmed:
+        print(
+            f"Refusing to set temperature without --yes. Run: hottubctl temp set {value:g} --yes",
+            file=sys.stderr,
+        )
+        return 2
     try:
         result = asyncio.run(set_temperature(value, unit))
     except (ConfigError, SpaSelectionError, RuntimeError, ValueError) as exc:
@@ -91,7 +100,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.temp_command == "get":
             return cmd_temp_get(args.json)
         if args.temp_command == "set":
-            return cmd_temp_set(args.value, args.unit, args.json)
+            return cmd_temp_set(args.value, args.unit, args.json, args.yes)
 
     parser.print_help()
     return 1

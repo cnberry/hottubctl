@@ -38,8 +38,7 @@ async def list_spas() -> list[dict]:
         account = await client.get_account()
         spas = await account.get_spas()
         return [
-            {"id": spa.id, "name": spa.name, "brand": spa.brand, "model": spa.model}
-            for spa in spas
+            {"id": spa.id, "name": spa.name, "brand": spa.brand, "model": spa.model} for spa in spas
         ]
     finally:
         await client._session.close()
@@ -62,13 +61,17 @@ async def get_temperature_status() -> dict:
         properties = getattr(status, "properties", {}) or {}
         water_props = properties.get("water") or {}
         fields_last_updated = getattr(status, "fields_last_updated", {}) or {}
-        water_last_updated = water_props.get("temperatureLastUpdated") or water_props.get("lastUpdated")
+        water_last_updated = water_props.get("temperatureLastUpdated") or water_props.get(
+            "lastUpdated"
+        )
         connectivity_checked_at = fields_last_updated.get("online")
         return {
             "spa_id": spa.id,
             "spa_name": spa.name,
             "display_temperature_format": getattr(status, "display_temperature_format", None),
-            "heat_mode": getattr(getattr(status, "heat_mode", None), "name", getattr(status, "heat_mode", None)),
+            "heat_mode": getattr(
+                getattr(status, "heat_mode", None), "name", getattr(status, "heat_mode", None)
+            ),
             "online": online,
             "water_temp_c": water_temp_c,
             "set_temp_c": set_temp_c,
@@ -84,7 +87,9 @@ async def get_temperature_status() -> dict:
             "connectivity_checked_at": connectivity_checked_at,
             "connectivity_checked_at_display": format_timestamp(connectivity_checked_at),
             "connectivity_age_display": format_age(connectivity_checked_at),
-            "data_freshness_note": _note_for_freshness(online, telemetry_last_updated, water_last_updated),
+            "data_freshness_note": _note_for_freshness(
+                online, telemetry_last_updated, water_last_updated
+            ),
         }
     finally:
         await client._session.close()
