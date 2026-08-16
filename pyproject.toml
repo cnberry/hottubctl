@@ -4,10 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hottubctl"
-version = "0.1.0"
-description = "Terminal-first Sundance SmartTub control"
+version = "0.2.0"
+description = "Terminal-first Sundance SmartTub status and guarded temperature control"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{name = "Chris Berry"}]
+keywords = ["sundance", "smarttub", "spa", "hot-tub", "home-automation", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Home Automation",
+]
 dependencies = [
   "aiohttp>=3.9.0",
   "python-dateutil>=2.9.0",
@@ -15,8 +26,25 @@ dependencies = [
   "python-smarttub>=0.0.47",
 ]
 
+[project.optional-dependencies]
+dev = ["detect-secrets>=1.5,<2", "pytest>=8,<9", "ruff>=0.9,<1"]
+
+[project.urls]
+Homepage = "https://github.com/cnberry/hottubctl"
+Issues = "https://github.com/cnberry/hottubctl/issues"
+
 [project.scripts]
 hottubctl = "hottubctl.cli:main"
 
 [tool.setuptools]
 packages = ["hottubctl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

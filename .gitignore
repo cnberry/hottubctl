@@ -4,4 +4,8 @@ __pycache__/
 .venv/
 .pytest_cache/
 .DS_Store
+.env
+.ruff_cache/
 config/hottubctl.json
+build/
+dist/

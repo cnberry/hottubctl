@@ -9,19 +9,19 @@ default:
 
 setup:
     {{python}} -m venv {{venv}}
-    {{venv}}/bin/pip install -e .
-    {{venv}}/bin/pip install pytest
+    {{venv}}/bin/pip install -e ".[dev]"
 
 install:
-    pipx install --editable .
+    ./script/install
 
 reinstall:
-    -pipx uninstall hottubctl
-    pipx install --editable .
+    ./script/install
 
 test:
-    {{python}} -m py_compile hottubctl.py hottubctl/*.py
-    if [ -x {{pytest}} ]; then PYTHONPATH=. {{pytest}} -q; else echo 'pytest not installed; run just setup'; fi
+    {{venv}}/bin/ruff format --check hottubctl tests
+    {{venv}}/bin/ruff check hottubctl tests
+    {{venv}}/bin/detect-secrets scan --baseline .secrets.baseline
+    PYTHONPATH=. {{pytest}} -q
 
 test-integration:
     hottubctl spas >/dev/null
@@ -40,4 +40,4 @@ temp-get:
     hottubctl temp get
 
 temp-set value:
-    hottubctl temp set {{value}}
+    hottubctl temp set {{value}} --yes

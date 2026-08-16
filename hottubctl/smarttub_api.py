@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import aiohttp
-
 from smarttub import SmartTub
 
 from .config import preferred_spa_selector, smarttub_credentials
@@ -15,7 +14,11 @@ async def login_client() -> SmartTub:
     username, password = smarttub_credentials()
     session = aiohttp.ClientSession()
     client = SmartTub(session)
-    await client.login(username, password)
+    try:
+        await client.login(username, password)
+    except Exception:
+        await session.close()
+        raise
     return client
 
 
@@ -40,5 +43,5 @@ async def select_spa(client: SmartTub):
         return spas[0]
 
     raise SpaSelectionError(
-        "multiple spas found; set spa_name or spa_id in config/hottubctl.json"
+        "multiple spas found; set spa_name or spa_id in the private hottubctl config"
     )

@@ -1,65 +1,40 @@
-# AGENTS.md
+# Repository guidance
 
-## What this repo is
+## Purpose
 
-`hottubctl` is a terminal-first Sundance SmartTub control project.
+`hottubctl` is a terminal-first Sundance SmartTub inspection and control tool.
+Keep cloud/API handling, temperature logic, rendering, and CLI dispatch
+separate, and be precise about whether data is live or last-known.
 
-The goal is to build:
-- a clean library layer
-- a sharp CLI
-- small, explicit commands
-- enough SmartTub understanding to inspect and control a real spa honestly
+## Engineering principles
 
-Think: UNIX tool, not spa-lifestyle app sludge.
+- Treat offline or old telemetry as stale, not as current physical truth.
+- Keep commands small, explicit, and scriptable.
+- Treat heated water equipment as safety-sensitive.
+- Require a deliberate guard for every mutating command.
+- Report post-write state instead of equating request acceptance with success.
+- Keep real credentials, spa names, and identifiers outside the public repo.
+- Preserve compact human output and stable JSON output.
+- Test conversion, freshness, rendering, configuration, selection, and CLI
+  guards without requiring a live SmartTub account.
+- Update `README.md`, `SKILL.md`, and relevant files under `docs/` when command
+  behavior changes.
+- Maintain `script/install` as the language-neutral deployment contract. A
+  future Rust migration changes that script, not private bootstrap callers.
 
-## Project principles
+## Layout
 
-- **Library first, CLI immediately useful.**
-  The API/control logic should be reusable, while the CLI stays pleasant for direct human use.
-
-- **Be honest about freshness.**
-  If the spa is offline or the telemetry is stale, say so plainly.
-
-- **Small commands, low surprise.**
-  Commands should do one thing well and print useful output.
-
-- **Read before write, then add guarded writes.**
-  Prove inspection flows first, then extend mutating commands carefully.
-
-- **Update docs when the shape settles.**
-  When a change feels right, update `README.md` and `AGENTS.md` in the same stretch of work.
-
-- **Prefer pipx for installed CLI usage.**
-  For daily use, these tools should behave like normal commands on the user path. Reserve local venv activation for development and testing.
-
-## Current shape
-
-- `hottubctl/smarttub_api.py` — SmartTub login and spa selection helpers
-- `hottubctl/temperature.py` — temperature read/set logic plus freshness interpretation
+- `hottubctl/smarttub_api.py` — login and exact spa selection
+- `hottubctl/temperature.py` — temperature reads, writes, and freshness logic
 - `hottubctl/render.py` — human-readable status rendering
-- `hottubctl/config.py` — local config lookup outside the repo by default
-- `hottubctl/cli.py` — command-line entrypoint
-- `research.md` — API notes and rough edges discovered so far
+- `hottubctl/config.py` — private local account configuration
+- `hottubctl/cli.py` — command-line parser and dispatch
+- `script/install` — stable installer entry point for deployment automation
+- `tests/` — account-free unit tests
+- `docs/` — operations, protocol, troubleshooting, and roadmap notes
 
-`SKILL.md` should live at the repo root so agent workflows can drive this CLI directly.
+## Development
 
-## Near-term roadmap
-
-1. Keep the current temp/status commands sharp and boring
-2. Add more status surfaces only if they stay readable
-3. Improve structured JSON output where useful
-4. Keep the install/reinstall workflow clean via `pipx`
-5. Grow feature-by-feature from proven working commands
-
-## Style
-
-- Keep code boring and readable.
-- Avoid needless framework energy.
-- Prefer explicit names over magic.
-- Don’t let the repo turn into glossy smart-home cosplay.
-
-## Vibe
-
-This project is a small terminal soak for checking whether the tub is actually telling the truth.
-
-♨️🤖🛁
+Prefer `pipx` for daily installed use and `.venv` for development. Run the full
+format, lint, secret-scan, and test sequence documented in `README.md` before
+publishing. Never perform a live spa write as part of an automated test.

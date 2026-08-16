@@ -1,59 +1,31 @@
 ---
 name: hottubctl
-description: Control a Sundance SmartTub spa from the local `hottubctl` CLI. Use when asked to list spas, check spa status or temperature freshness, read set/current temperature, or set target temperature from this repo.
+description: Inspect and control a Sundance SmartTub spa with the hottubctl CLI. Use for spa listing, online state, current and target temperature, telemetry freshness, and guarded target-temperature changes.
 ---
 
 # hottubctl
 
-Use the local `hottubctl` CLI from this repository.
+Use the installed `hottubctl` CLI instead of ad-hoc cloud calls when a command
+already exists.
 
-## Rules
+## Safety rules
 
-- Prefer the `hottubctl` CLI over ad-hoc Python when the command already exists.
-- Keep responses short and action-oriented.
-- Report compact final CLI output, not raw internal debugging unless asked.
-- Be explicit when SmartTub reports the spa offline or the telemetry looks stale.
+- Treat credentials, spa names, identifiers, and raw JSON as private data.
+- State plainly when a spa is offline or telemetry may be stale.
+- Use `--yes` only after the selected spa, value, and unit are clear.
+- Report the target value returned after the write; do not claim the water has
+  physically reached it.
+- If selection is ambiguous, require private `spa_name` or `spa_id` config
+  instead of guessing.
 
-## Run from repo root
-
-Preferred daily-use flow:
-
-```bash
-cd /home/chris/.openclaw/workspace/hottubctl
-hottubctl temp get
-```
-
-Local config is expected at one of:
-- `$HOTTUBCTL_CONFIG`
-- `~/.config/hottubctl/hottubctl.json`
-- `~/.hottubctl/hottubctl.json`
-
-## Command map
-
-### Inspection
+## Commands
 
 ```bash
 hottubctl spas
 hottubctl temp get
+hottubctl temp set 101 --yes
+hottubctl temp set 38 --unit C --yes
 ```
 
-### Control
-
-```bash
-hottubctl temp set 101
-```
-
-Use for requests like:
-- "what temp is the hot tub?"
-- "is the spa online?"
-- "is this stale SmartTub data?"
-- "set the hot tub to 101"
-
-## Response style
-
-Examples:
-- "Hot tub is offline; displayed temperatures appear stale."
-- "Set temperature: 101°F"
-- "Spa: Example Spa — Water: 101.5°F, Set: 102.0°F"
-
-If a command fails, quote the relevant error briefly and say what you’ll do next.
+Add `--json` for structured output. If a command fails, quote the short error
+and do not claim the cloud or equipment reached the requested state.

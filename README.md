@@ -1,135 +1,141 @@
-# hottubctl ♨️🤖🛁
+<p align="center">
+  <img src="docs/assets/hottubctl-hero.jpg" alt="Illustration of a terminal monitoring a connected hot tub" width="100%">
+</p>
 
-A terminal-first Sundance SmartTub control tool for checking spa state without poking around a glossy phone app.
+# hottubctl
 
-`hottubctl` is the spa-shaped member of the same little CLI family as `poolctl` and `lightctl`: small commands, readable output, and local config instead of repo-shaped secrets.
+`hottubctl` is a small Python CLI for inspecting and operating a Sundance
+SmartTub spa through the vendor cloud. It lists spas, reports connectivity and
+temperature freshness, exposes structured JSON, and performs guarded target-
+temperature writes.
+
+> [!WARNING]
+> `hottubctl` controls heated water equipment through an unofficial cloud
+> integration. Verify the selected spa and requested temperature, preserve a
+> working official control path, and do not use stale telemetry as proof that
+> the physical equipment is safe.
 
 ## What it does
 
-- lists SmartTub-visible spas
-- shows current water/set temperature
-- shows SmartTub connectivity state (`ONLINE` / `OFFLINE`)
-- warns when telemetry appears stale
-- sets target temperature
+- lists spas visible to the configured SmartTub account;
+- reads current water and target temperatures;
+- reports online/offline state and the age of available telemetry;
+- warns when an offline spa is showing last-known values;
+- sets target temperature after an explicit `--yes` guard;
+- reads status again and reports the resulting target value.
+
+Python 3.13 or newer is required by the current `python-smarttub` release.
 
 ## Install
 
 ```bash
-git clone git@github.com:your-user/hottubctl.git
+git clone https://github.com/cnberry/hottubctl.git
 cd hottubctl
-just install
+./script/install
 ```
 
-That installs `hottubctl` with `pipx` so it behaves like a normal command on your path.
+`script/install` is the stable repository contract used by private deployment
+automation. Today it installs the Python package with `pipx`; it can be replaced
+by a Rust or binary installer later without changing callers. `just install`
+uses the same contract.
 
-Useful `just` targets:
+## Configure private credentials
+
+Install the sanitized example outside the repository, then replace its values:
 
 ```bash
-just setup
-just test
-just test-integration
-just test-all
-just status
-just spas
-just temp-get
-just temp-set 101
+mkdir -p ~/.config/hottubctl
+install -m 600 config/hottubctl.example.json ~/.config/hottubctl/hottubctl.json
 ```
 
-## Local config
+Set the password in the process environment before running a command:
 
-`hottubctl` looks for config in this order:
-- `$HOTTUBCTL_CONFIG`
-- `~/.config/hottubctl/hottubctl.json`
-- `~/.hottubctl/hottubctl.json`
-- repo-local `config/hottubctl.json` (dev-only fallback)
-
-Start from:
-- `config/hottubctl.example.json`
-
-Expected fields:
-- SmartTub username/email
-- SmartTub password
-- optional preferred spa name or spa id
-- preferred temperature unit
-
-Do **not** commit real credentials.
-
-## Commands
-
-- `hottubctl spas`
-- `hottubctl temp get`
-- `hottubctl temp set 101`
-
-`temp get` reports:
-- water temperature
-- set temperature
-- heat mode when available
-- connectivity check time
-- telemetry age
-- water reading age
-- a freshness note when the spa appears offline and the data may be stale
-
-Example status output:
-
-```text
-Hot tub status
---------------
-- Spa: Example Spa (100000000)
-- Connectivity: OFFLINE
-- Connectivity checked: 2026-04-05 10:05:03 PDT (1s ago)
-- Water: 102.9°F
-- Set: 104.0°F
-- Heat mode: AUTO
-- Telemetry updated: 2025-02-25 10:56:39 PST (stale)
-- Water reading updated: 2025-02-25 06:56:38 PST (stale)
-- Note: spa is offline; temperatures may be stale last-known values
+```bash
+export HOTTUBCTL_PASSWORD='read-from-your-password-manager'
+hottubctl temp get
 ```
+
+The username may come from config or `HOTTUBCTL_USERNAME`; the password may come
+from `HOTTUBCTL_PASSWORD` or, for backward compatibility, a mode-`0600` config
+field. Optional `spa_name` or `spa_id` selects one spa when the account has
+several, and `temperature_unit` accepts `F` or `C`. Set
+`HOTTUBCTL_CONFIG=/path/to/hottubctl.json` to use another private file.
+
+Credentials, spa identifiers, and account-specific names belong in a private
+configuration repository. Never put them in a public fork, issue, log, or
+automation transcript.
+
+## Inspect state
+
+```bash
+hottubctl spas
+hottubctl temp get
+```
+
+Add `--json` after either command for structured output. Human temperature
+status includes connectivity time, telemetry age, water-reading age, and a
+freshness note when the data may be stale.
+
+## Set target temperature
+
+```bash
+hottubctl temp set 101 --yes
+hottubctl temp set 38 --unit C --yes
+```
+
+The write is refused without `--yes`. The CLI selects the configured spa, sends
+the requested setpoint, reads current spa status again, and reports the target
+value returned by SmartTub. Cloud confirmation does not prove that the water has
+reached that temperature. See [operations](docs/operations.md).
+
+## Runtime data
+
+| Data | Default path | Git policy |
+| --- | --- | --- |
+| Account/spa config | `~/.config/hottubctl/hottubctl.json` | Private config repo only |
+| Password | `HOTTUBCTL_PASSWORD` or legacy config field | Never commit |
+| Legacy config | `~/.hottubctl/hottubctl.json` | Private; migrate when practical |
+| API responses | Memory and standard output only | Review JSON before sharing |
+
+## Reliability and scope
+
+SmartTub is cloud- and connectivity-dependent. An offline spa may still return
+old temperatures, so `hottubctl` reports timestamps and never converts an
+offline last-known reading into a claim of current physical state. Vendor API,
+authentication, and library behavior can change without notice.
+
+See [protocol notes](docs/protocol.md), [troubleshooting](docs/troubleshooting.md),
+and the [roadmap](docs/roadmap.md) for more detail.
+
+## Control-tool family
+
+- [`gatectl`](https://github.com/cnberry/gatectl) — MyQ gate and garage-door
+  status with guarded open/close.
+- [`poolctl`](https://github.com/cnberry/poolctl) — Pentair ScreenLogic status,
+  cleaner, and delay control.
+- [`hottubctl`](https://github.com/cnberry/hottubctl) — Sundance SmartTub
+  temperature and freshness inspection.
+- [`switchctl`](https://github.com/cnberry/switchctl) — named local switch
+  status and guarded power control.
+
+Current and future `*ctl` tools favor small commands, private configuration,
+readable output, safe JSON, guarded writes, post-write readback, a repo-owned
+`script/install`, and explicit uncertainty.
 
 ## Development
 
-For early API exploration or proof-of-life work:
-
 ```bash
 python3 -m venv .venv
-. .venv/bin/activate
-pip install -r requirements.txt
-python hottubctl.py spas
-python hottubctl.py temp get
+.venv/bin/python -m pip install -e ".[dev]"
+.venv/bin/ruff format --check hottubctl tests
+.venv/bin/ruff check hottubctl tests
+.venv/bin/detect-secrets scan --baseline .secrets.baseline
+.venv/bin/pytest -q
 ```
 
-Once the idea is working, prefer the installed command shape via `just install` / `just reinstall`.
+Automated tests do not log in or contact a real spa. `just test-integration`
+does contact the configured account and is deliberately separate.
 
-## Why this repo exists
+## License
 
-The goal is simple: make the useful spa checks fast, scriptable, and honest about freshness.
-If the tub is offline, the CLI should say so instead of pretending stale numbers are live truth.
-
-## Extra docs
-
-- `config/hottubctl.example.json` — starter example config
-- `research.md` — API notes and rough edges discovered so far
-
-## Built with
-
-This repo was created with:
-- OpenClaw 2026.3.28 (`f9b1079`)
-- OpenAI GPT 5.4
-
-## Current shape
-
-This repo is still earlier than `poolctl` and `lightctl`, but it already has proof of life:
-- login works
-- spa listing works
-- temperature reads work
-- temperature set works
-- offline/stale telemetry is called out explicitly
-
-That makes it a decent foundation for extending the CLI feature-by-feature without lying about what is and is not mature yet.
-
-## Agent-first repo notes
-
-This repo is intended to be agent-friendly as well as human-friendly.
-The standard agent-first files live at the repo root:
-- `README.md` — human-facing overview
-- `AGENTS.md` — project principles and working conventions
-- `SKILL.md` — direct agent usage guidance
+`hottubctl` is released under the [MIT License](LICENSE).
