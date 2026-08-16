@@ -12,11 +12,10 @@ setup:
     {{venv}}/bin/pip install -e ".[dev]"
 
 install:
-    pipx install --editable .
+    ./script/install
 
 reinstall:
-    -pipx uninstall hottubctl
-    pipx install --editable .
+    ./script/install
 
 test:
     {{venv}}/bin/ruff format --check hottubctl tests

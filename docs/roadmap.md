@@ -22,6 +22,12 @@
 - keep experimental local transport separate from the proven cloud commands;
 - require model-specific safety analysis before any local write surface.
 
+## Implementation direction
+
+A future Rust port should preserve the CLI, private config paths, freshness
+semantics, JSON contract, and `script/install` entry point. Keep the Python
+implementation until the replacement reaches behavioral and safety parity.
+
 ## Out of scope by default
 
 - unattended safety-critical automation;

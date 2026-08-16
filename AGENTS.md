@@ -19,6 +19,8 @@ separate, and be precise about whether data is live or last-known.
   guards without requiring a live SmartTub account.
 - Update `README.md`, `SKILL.md`, and relevant files under `docs/` when command
   behavior changes.
+- Maintain `script/install` as the language-neutral deployment contract. A
+  future Rust migration changes that script, not private bootstrap callers.
 
 ## Layout
 
@@ -27,6 +29,7 @@ separate, and be precise about whether data is live or last-known.
 - `hottubctl/render.py` — human-readable status rendering
 - `hottubctl/config.py` — private local account configuration
 - `hottubctl/cli.py` — command-line parser and dispatch
+- `script/install` — stable installer entry point for deployment automation
 - `tests/` — account-free unit tests
 - `docs/` — operations, protocol, troubleshooting, and roadmap notes
 
