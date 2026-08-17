@@ -3,11 +3,16 @@ import json
 import pytest
 
 from hottubctl.config import (
+    CONFIG_CANDIDATES,
     ConfigError,
     preferred_spa_selector,
     preferred_unit,
     smarttub_credentials,
 )
+
+
+def test_system_config_path_is_the_primary_default():
+    assert CONFIG_CANDIDATES[0].as_posix() == "/usr/local/config/hottubctl/config.json"
 
 
 def write_config(monkeypatch, tmp_path, payload):
@@ -33,10 +38,10 @@ def test_loads_private_config_override(monkeypatch, tmp_path):
     assert preferred_unit() == "F"
 
 
-def test_password_can_come_from_environment(monkeypatch, tmp_path):
+def test_rejects_missing_password(monkeypatch, tmp_path):
     write_config(monkeypatch, tmp_path, {"username": "user@example.com"})
-    monkeypatch.setenv("HOTTUBCTL_PASSWORD", "environment-only")
-    assert smarttub_credentials() == ("user@example.com", "environment-only")
+    with pytest.raises(ConfigError, match="username and password in config"):
+        smarttub_credentials()
 
 
 def test_rejects_invalid_temperature_unit(monkeypatch, tmp_path):

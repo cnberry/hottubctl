@@ -2,10 +2,10 @@
 
 ## Config is not found
 
-Create `~/.config/hottubctl/hottubctl.json` from the public example, keep it mode
-`0600`, set `HOTTUBCTL_PASSWORD` from a password manager, or set
-`HOTTUBCTL_CONFIG` to an explicit private file. Repository-local credential
-files are intentionally unsupported.
+Create `/usr/local/config/hottubctl/config.json` from the public example, put
+both username and password in it, and keep it mode `0600`. Set
+`HOTTUBCTL_CONFIG` only to select another private file. Repository-local public
+credential files are intentionally unsupported.
 
 ## Multiple spas are found
 

@@ -35,6 +35,6 @@ separate, and be precise about whether data is live or last-known.
 
 ## Development
 
-Prefer `pipx` for daily installed use and `.venv` for development. Run the full
+Use the private home-ops bootstrap for installed use and `.venv` for development. Run the full
 format, lint, secret-scan, and test sequence documented in `README.md` before
 publishing. Never perform a live spa write as part of an automated test.
