@@ -6,12 +6,10 @@ from pathlib import Path
 from typing import Any
 
 ENV_CONFIG_PATH = "HOTTUBCTL_CONFIG"
-ENV_USERNAME = "HOTTUBCTL_USERNAME"
-ENV_PASSWORD = "HOTTUBCTL_PASSWORD"
-DEFAULT_CONFIG_BASENAME = "hottubctl.json"
-SEARCH_DIRS = [
-    Path.home() / ".config" / "hottubctl",
-    Path.home() / ".hottubctl",
+CONFIG_CANDIDATES = [
+    Path("/usr/local/config/hottubctl/config.json"),
+    Path.home() / ".config" / "hottubctl" / "hottubctl.json",
+    Path.home() / ".hottubctl" / "hottubctl.json",
 ]
 EXAMPLE_CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "hottubctl.example.json"
 
@@ -24,11 +22,10 @@ def config_path() -> Path:
     override = os.environ.get(ENV_CONFIG_PATH)
     if override:
         return Path(override).expanduser()
-    for directory in SEARCH_DIRS:
-        candidate = directory / DEFAULT_CONFIG_BASENAME
+    for candidate in CONFIG_CANDIDATES:
         if candidate.exists():
             return candidate
-    return SEARCH_DIRS[0] / DEFAULT_CONFIG_BASENAME
+    return CONFIG_CANDIDATES[0]
 
 
 def load_config() -> dict[str, Any]:
@@ -43,12 +40,10 @@ def load_config() -> dict[str, Any]:
 
 def smarttub_credentials() -> tuple[str, str]:
     config = load_config()
-    username = os.environ.get(ENV_USERNAME) or config.get("username")
-    password = os.environ.get(ENV_PASSWORD) or config.get("password")
+    username = config.get("username")
+    password = config.get("password")
     if not username or not password:
-        raise ConfigError(
-            f"credentials require username and password in config or {ENV_USERNAME}/{ENV_PASSWORD}"
-        )
+        raise ConfigError("credentials require username and password in config")
     return username, password
 
 

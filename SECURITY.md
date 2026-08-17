@@ -1,7 +1,7 @@
 # Security policy
 
 `hottubctl` handles a cloud username and password and can change heated water
-equipment. Prefer supplying `HOTTUBCTL_PASSWORD` from a password manager. Report
+equipment. Keep credentials in a private mode-`0600` config. Report
 vulnerabilities privately through GitHub's security-advisory feature instead of
 opening a public issue with credentials, spa IDs, raw responses, or exploit
 details.

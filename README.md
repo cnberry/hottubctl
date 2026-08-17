@@ -29,37 +29,36 @@ Python 3.13 or newer is required by the current `python-smarttub` release.
 ## Install
 
 ```bash
-git clone https://github.com/cnberry/hottubctl.git
-cd hottubctl
-./script/install
+cd /path/to/private/home-ops
+./bin/bootstrap-ctls hottubctl
 ```
 
-`script/install` is the stable repository contract used by private deployment
-automation. Today it installs the Python package with `pipx`; it can be replaced
-by a Rust or binary installer later without changing callers. `just install`
-uses the same contract.
+The private `home-ops` bootstrap is the canonical installer: it populates the
+real spa inventory, calls this repository's stable `script/install` contract,
+and creates `/usr/local/bin/hottubctl` backed by an isolated system environment
+under `/usr/local/lib/home-ops/ctls`.
 
 ## Configure private credentials
 
 Install the sanitized example outside the repository, then replace its values:
 
 ```bash
-mkdir -p ~/.config/hottubctl
-install -m 600 config/hottubctl.example.json ~/.config/hottubctl/hottubctl.json
+sudo install -d -m 700 /usr/local/config/hottubctl
+sudo install -m 600 config/hottubctl.example.json /usr/local/config/hottubctl/config.json
 ```
 
-Set the password in the process environment before running a command:
+Store the username and password directly in that mode-`0600` config:
 
-```bash
-export HOTTUBCTL_PASSWORD='read-from-your-password-manager'
-hottubctl temp get
+```json
+{
+  "username": "your-smarttub-email@example.com",
+  "password": "replace-with-smarttub-password"
+}
 ```
 
-The username may come from config or `HOTTUBCTL_USERNAME`; the password may come
-from `HOTTUBCTL_PASSWORD` or, for backward compatibility, a mode-`0600` config
-field. Optional `spa_name` or `spa_id` selects one spa when the account has
-several, and `temperature_unit` accepts `F` or `C`. Set
-`HOTTUBCTL_CONFIG=/path/to/hottubctl.json` to use another private file.
+Optional `spa_name` or `spa_id` selects one spa when the account has several,
+and `temperature_unit` accepts `F` or `C`. Set
+`HOTTUBCTL_CONFIG=/path/to/config.json` to use another private file.
 
 Credentials, spa identifiers, and account-specific names belong in a private
 configuration repository. Never put them in a public fork, issue, log, or
@@ -92,8 +91,8 @@ reached that temperature. See [operations](docs/operations.md).
 
 | Data | Default path | Git policy |
 | --- | --- | --- |
-| Account/spa config | `~/.config/hottubctl/hottubctl.json` | Private config repo only |
-| Password | `HOTTUBCTL_PASSWORD` or legacy config field | Never commit |
+| Account/spa config | `/usr/local/config/hottubctl/config.json` | Private config repo only |
+| Password | `/usr/local/config/hottubctl/config.json` | Private config repo only |
 | Legacy config | `~/.hottubctl/hottubctl.json` | Private; migrate when practical |
 | API responses | Memory and standard output only | Review JSON before sharing |
 
