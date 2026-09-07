@@ -1,13 +1,20 @@
 <p align="center">
-  <img src="docs/assets/hottubctl-hero.jpg" alt="Illustration of a terminal monitoring a connected hot tub" width="100%">
+  <img src="docs/assets/hottubctl-hero.png" alt="A tiny coral robot adjusts a hot tub beside a rubber duck" width="100%">
 </p>
 
 # hottubctl
+
+> **One tiny dial. Disproportionately warm water.**
+>
+> Check the temperature. Confirm the change. Deploy the rubber duck.
 
 `hottubctl` is a small Python CLI for inspecting and operating a Sundance
 SmartTub spa through the vendor cloud. It lists spas, reports connectivity and
 temperature freshness, exposes structured JSON, and performs guarded target-
 temperature writes.
+
+That is the whole trick: honest status, one careful control, and no grand theory
+of autonomous spa management.
 
 > [!WARNING]
 > `hottubctl` controls heated water equipment through an unofficial cloud

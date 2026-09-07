@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hottubctl"
 version = "0.2.0"
-description = "Terminal-first Sundance SmartTub status and guarded temperature control"
+description = "Tiny Sundance SmartTub CLI for guarded temperature control"
 readme = "README.md"
 requires-python = ">=3.13"
 license = "MIT"
